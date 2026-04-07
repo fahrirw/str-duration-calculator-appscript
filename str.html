@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      .input-field {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 10px 0;
+        font-size: 18px;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 20px;
+        background-color: #f9f9f9;
+        padding: 20px;
+      }
+      label {
+        font-weight: 600;
+      }
+      #hasil, #durasi {
+        background-color: #eee;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body>
+    <form id="dataForm" onsubmit="return false;">
+      <label for="pic">Cluster:</label>
+      <select id="pic" name="pic" class="input-field" required onchange="hitungSTR()">
+        <option value="" disabled selected>Pilih Cluster</option>
+        <option value="TYPE A">Type A</option>
+        <option value="TYPE B">Type B</option>
+        <option value="TYPE C">Type C</option>
+        <option value="TYPE D">Type D</option>
+        <option value="TYPE E">Type E</option>
+      </select>
+
+      <label for="tanggal">Tanggal Input:</label>
+      <input type="date" id="tanggal" name="tanggal" class="input-field" required onchange="hitungSTR()">
+
+      <label for="durasi">Durasi STR (bulan):</label>
+      <input type="text" id="durasi" class="input-field" readonly>
+
+      <label for="hasil">Tanggal STR (hasil):</label>
+      <input type="text" id="hasil" class="input-field" readonly>
+
+      <button type="button" class="input-field" onclick="resetForm()">Reset</button>
+    </form>
+
+    <script>
+      function hitungSTR() {
+        const tanggal = document.getElementById('tanggal').value;
+        const cluster = document.getElementById('pic').value;
+
+        if (!tanggal || !cluster) {
+          document.getElementById('hasil').value = "";
+          document.getElementById('durasi').value = "";
+          return;
+        }
+
+        google.script.run.withSuccessHandler(function (durasi) {
+          if (!durasi || isNaN(durasi)) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Durasi STR tidak valid untuk cluster ' + cluster,
+            });
+            document.getElementById('hasil').value = "";
+            document.getElementById('durasi').value = "";
+            return;
+          }
+
+          const inputDate = new Date(tanggal);
+          inputDate.setMonth(inputDate.getMonth() + Number(durasi));
+
+          const formattedStr = inputDate.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+
+          document.getElementById('durasi').value = durasi + " bulan";
+          document.getElementById('hasil').value = formattedStr;
+
+        }).getDurasiSTR(cluster, tanggal);
+      }
+
+      function resetForm() {
+        document.getElementById("pic").selectedIndex = 0;
+        document.getElementById("tanggal").value = "";
+        document.getElementById("hasil").value = "";
+        document.getElementById("durasi").value = "";
+      }
+    </script>
+  </body>
+</html>
