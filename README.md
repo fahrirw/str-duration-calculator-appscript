@@ -4,7 +4,7 @@
 A dynamic web-based tool to calculate STR duration based on cluster and input date using Google Apps Script and Google Sheets.
 
 ## Preview
-![Form](images/output.png)
+![Form](images/Output.png)
 
 ## Features
 - Dynamic calculation based on selected cluster
